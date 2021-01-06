@@ -29,18 +29,28 @@ class RSI2(IStrategy):
     # Optimal timeframe for the strategy
     timeframe = '1h'
 
+    order_types = {
+        "buy": "market",
+        "sell": "market",
+        "emergencysell": "market",
+        "stoploss": "market",
+        "stoploss_on_exchange": False,
+        "stoploss_on_exchange_interval": 60,
+        "stoploss_on_exchange_limit_ratio": 0.99,
+    }
+
     # These values can be overridden in the "ask_strategy" section in the config.
     use_sell_signal = True
     sell_profit_only = True
 
-    # Number of candles the strategy requires before producing valid signals
-    startup_candle_count: int = 200
+    # Candles configurations
+    process_only_new_candles = True
+    startup_candle_count: int = 100
 
     def populate_indicators(self, dataframe: DataFrame, metadata: dict) -> DataFrame:
 
         # EMAs
-        dataframe['ema5'] = ta.EMA(dataframe, timeperiod=5)
-        dataframe['ema200'] = ta.EMA(dataframe, timeperiod=200)
+        dataframe['ema100'] = ta.EMA(dataframe, timeperiod=100)
 
         # RSI2
         dataframe['rsi2'] = ta.RSI(dataframe, timeperiod=2)
@@ -51,7 +61,7 @@ class RSI2(IStrategy):
         dataframe.loc[
             (
                 # Must be oversold on a running uptrend
-                (dataframe['close'] > dataframe['ema200']) &
+                (dataframe['close'] > dataframe['ema100']) &
                 (dataframe['rsi2'] <= 10)
             ),
             'buy'] = 1
