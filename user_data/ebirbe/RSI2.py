@@ -16,18 +16,18 @@ class RSI2(IStrategy):
 
     """
     minimal_roi = {
-        "0": 100
+        "0": 100,
     }
 
     # Optimal stoploss designed for the strategy
     stoploss = -0.03
-    trailing_stop = True
-    trailing_stop_positive = 0.005
-    trailing_stop_positive_offset = 0.02
-    trailing_only_offset_is_reached = True
+    trailing_stop = False
+    #trailing_stop_positive = 0.005
+    #trailing_stop_positive_offset = 0.02
+    #trailing_only_offset_is_reached = True
 
     # Optimal timeframe for the strategy
-    timeframe = '1h'
+    timeframe = '15m'
 
     order_types = {
         "buy": "market",
@@ -41,28 +41,30 @@ class RSI2(IStrategy):
 
     # These values can be overridden in the "ask_strategy" section in the config.
     use_sell_signal = True
-    sell_profit_only = True
+    sell_profit_only = False
 
     # Candles configurations
     process_only_new_candles = True
-    startup_candle_count: int = 100
+    startup_candle_count: int = 20
 
     def populate_indicators(self, dataframe: DataFrame, metadata: dict) -> DataFrame:
 
         # EMAs
-        dataframe['ema100'] = ta.EMA(dataframe, timeperiod=100)
+        dataframe['ema20'] = ta.EMA(dataframe, timeperiod=20)
+        dataframe['ema50'] = ta.EMA(dataframe, timeperiod=50)
 
-        # RSI2
+        # RSI
         dataframe['rsi2'] = ta.RSI(dataframe, timeperiod=2)
+        dataframe['rsi14'] = ta.RSI(dataframe, timeperiod=14)
 
         return dataframe
 
     def populate_buy_trend(self, dataframe: DataFrame, metadata: dict) -> DataFrame:
         dataframe.loc[
             (
-                # Must be oversold on a running uptrend
-                (dataframe['close'] > dataframe['ema100']) &
-                (dataframe['rsi2'] <= 10)
+                (dataframe['rsi2'] <= 10) &
+                #(qtpylib.crossed_above(dataframe['rsi2'], 10)) &
+                (dataframe['rsi14'] >= 35)
             ),
             'buy'] = 1
         return dataframe
@@ -70,8 +72,20 @@ class RSI2(IStrategy):
     def populate_sell_trend(self, dataframe: DataFrame, metadata: dict) -> DataFrame:
         dataframe.loc[
             (
-                # Selling at the end of an overbought condition
-                (qtpylib.crossed_below(dataframe['rsi2'], 90))
+                (
+                    (dataframe['close'] >= dataframe['ema20']) &
+                    (qtpylib.crossed_below(dataframe['rsi2'], 80)) &
+                    (dataframe['rsi14'].shift(1) >= 70)
+                )
+                | (
+                    (dataframe['close'] < dataframe['ema20']) &
+                    (qtpylib.crossed_below(dataframe['rsi2'], 80))
+                )
+                | (
+                    (qtpylib.crossed_below(dataframe['close'], dataframe['ema20'])) &
+                    (dataframe['rsi14'] < 50)
+                )
+                #| (qtpylib.crossed_below(dataframe['close'], dataframe['ema20']))
             ),
             'sell'] = 1
         return dataframe
