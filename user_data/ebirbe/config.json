@@ -1,17 +1,14 @@
 {
+    "dry_run": true,
+    "dry_run_wallet": 1000,
+    
     "max_open_trades": 10,
     "stake_currency": "USDT",
-
-    //"stake_amount": 20,
-    "stake_amount": "unlimited",
+    "stake_amount": 100,
 
     "tradable_balance_ratio": 0.99,
     "fiat_display_currency": "USD",
-    //"timeframe": "5m",
 
-    "dry_run": false,
-
-    "dry_run_wallet": 500,
     "cancel_open_orders_on_exit": false,
     "unfilledtimeout": {
         "buy": 10,
@@ -33,7 +30,6 @@
         "order_book_min": 1,
         "order_book_max": 1,
         "use_sell_signal": true,
-        "sell_profit_only": true,
         "ignore_roi_if_buy_signal": false
     },
     "exchange": {
@@ -51,11 +47,13 @@
             "DASH/USDT",
             "EOS/USDT",
             "ETH/USDT",
-            "LRC/USDT",
+            //"LRC/USDT",
             "LTC/USDT",
-            "YFI/USDT",
+            "TRX/USDT",
 
 	    // Optional Pairs
+            /**
+            "YFI/USDT",
             "ANT/USDT",
             "BAL/USDT",
             "BAND/USDT",
@@ -66,15 +64,32 @@
             "OMG/USDT",
             "PNT/USDT",
             "SNX/USDT",
-            "TRX/USDT",
-            "UNI/USDT"
+            "UNI/USDT"*/
         ],
         "pair_blacklist": [
-            "DOGE/USDT"
+            ".*UP/USDT",
+            ".*DOWN/USDT",
+            "EUR/USDT",
         ]
     },
     "pairlists": [
-        {"method": "StaticPairList"}
+        {"method": "StaticPairList"},
+        /*{
+            "method": "VolumePairList",
+            "number_assets": 50,
+            "sort_key": "quoteVolume",
+            "refresh_period": 1800
+        },
+        {"method": "AgeFilter", "min_days_listed": 30},
+        {"method": "PrecisionFilter"},
+        {"method": "PriceFilter", "low_price_ratio": 0.01},
+        {"method": "SpreadFilter", "max_spread_ratio": 0.005},
+        {
+            "method": "RangeStabilityFilter",
+            "lookback_days": 10,
+            "min_rate_of_change": 0.03,
+            "refresh_period": 1440
+        }*/
     ],
     "edge": {
         "enabled": false,
@@ -106,7 +121,7 @@
         "password": ""
     },
     "initial_state": "running",
-    "forcebuy_enable": false,
+    "forcebuy_enable": true,
     "internals": {
         "process_throttle_secs": 5
     }
