@@ -38,12 +38,11 @@ class RSI6040(IStrategy):
         "stoploss_on_exchange_limit_ratio": 0.99,
     }
 
-    # These values can be overridden in the "ask_strategy" section in the config.
     use_sell_signal = True
     sell_profit_only = True
 
     # Candles configurations
-    process_only_new_candles = True
+    process_only_new_candles = False
     startup_candle_count: int = 20
 
     use_custom_stoploss = True
@@ -58,7 +57,6 @@ class RSI6040(IStrategy):
 
         # EMAs
         dataframe['ema20'] = ta.EMA(dataframe, timeperiod=20)
-        dataframe['ema50'] = ta.EMA(dataframe, timeperiod=200)
 
         # RSI
         dataframe['rsi2'] = ta.RSI(dataframe, timeperiod=2)
