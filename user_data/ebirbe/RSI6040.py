@@ -19,7 +19,7 @@ class RSI6040(IStrategy):
     }
 
     # Optimal stoploss designed for the strategy
-    stoploss = -0.048
+    stoploss = -0.008
     trailing_stop = False
     #trailing_stop_positive = 0.015
     #trailing_stop_positive_offset = 0.016
